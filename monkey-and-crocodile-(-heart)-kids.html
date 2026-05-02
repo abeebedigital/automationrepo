@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>The Monty Who Shared</title>
+<meta name="description" content="A Story About Generosity"/>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<script src="analytics.js" defer></script>
+<script src="site-drawer.js" defer></script>
+<script src="page-share.js" defer></script>
+<style>
+  html{font-size:17px;}
+  @media(max-width:500px){html{font-size:15px;}}
+  :root{--gold:#ffd86b;--orange:#ff9f1c;--coral:#ff6b6b;--mint:#6bcb77;--blue:#4d96ff;--purple:#b28dff;--ink:#2d3436;--card:#fffefb;--line:#e9def9;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Nunito',sans-serif;background:radial-gradient(circle at 8% 18%,rgba(178,141,255,.20) 0 120px,transparent 121px),radial-gradient(circle at 86% 10%,rgba(255,216,107,.20) 0 130px,transparent 131px),linear-gradient(180deg,#f8f5ff 0%,#fffdf8 100%);color:var(--ink);min-height:100vh;overflow-x:hidden;}
+  #app{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:14px}
+  .home-link{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#6bcb77,#4d96ff);color:#fff;text-decoration:none;padding:8px 16px;border-radius:20px;font-family:'Fredoka One',cursive;font-size:13px;margin-bottom:8px}
+  .tts-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+  .tts-btn,.tts-stop{border:none;border-radius:20px;padding:8px 16px;color:#fff;font-family:'Fredoka One',cursive;font-size:13px;cursor:pointer}
+  .tts-btn{background:linear-gradient(135deg,#f39c12,#e67e22)}
+  .tts-stop{background:linear-gradient(135deg,#95a5a6,#7f8c8d)}
+  .progress-strip{background:#fff;border-radius:14px;padding:8px 14px;display:flex;gap:10px;align-items:center;margin-bottom:8px;border:2px solid var(--line);box-shadow:0 2px 12px rgba(0,0,0,.06)}
+  .progress-bar{flex:1;height:8px;background:#efe7ff;border-radius:999px;overflow:hidden}
+  .progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--mint),var(--blue),var(--purple));transition:width .4s ease}
+  .progress-label{font-family:'Fredoka One',cursive;font-size:12px;color:#8a7f73;white-space:nowrap}
+  .nav-bar{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:16px;padding:10px 14px;margin-bottom:10px;border:2px solid var(--line);box-shadow:0 2px 12px rgba(0,0,0,.06)}
+  .nav-btn{border:none;background:var(--coral);color:#fff;font-family:'Fredoka One',cursive;font-size:15px;padding:9px 20px;border-radius:22px;cursor:pointer}
+  .nav-btn:disabled{background:#d9d9d9;color:#999;cursor:not-allowed}
+  .page-dots{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:360px}
+  .dot{width:10px;height:10px;border-radius:50%;background:#ddd;cursor:pointer;border:none}
+  .dot.active{background:var(--coral);transform:scale(1.25)}
+  .dot.visited{background:rgba(255,107,107,.45)}
+  .page{display:none;animation:fadeIn .4s ease}
+  .page.active{display:block}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+  /* Cover */
+  .cover{background:linear-gradient(160deg,#1a1a4e 0%,#2d2d8e 52%,#4d96ff 100%);border-radius:24px;padding:50px 26px;min-height:560px;text-align:center;display:flex;flex-direction:column;justify-content:center;align-items:center;position:relative;overflow:hidden;border:2px solid rgba(255,255,255,.14)}
+  .cover-emoji{font-size:80px;animation:bob 2.4s ease-in-out infinite;margin-bottom:12px}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+  .cover-title{font-family:'Fredoka One',cursive;font-size:clamp(1.8rem,5vw,3rem);line-height:1.1;color:var(--gold);margin-bottom:10px}
+  .cover-sub{font-family:'Fredoka One',cursive;font-size:1.1rem;color:#ffe5a5;margin-bottom:14px}
+  .cover-tagline{max-width:650px;color:#f4f8ff;line-height:1.8;font-size:1rem;font-style:italic}
+  .age-badge{display:inline-block;background:rgba(255,255,255,.18);border-radius:20px;padding:4px 14px;font-family:'Fredoka One',cursive;font-size:.8rem;color:#fff;margin-bottom:16px}
+  .character-badge{display:inline-block;background:rgba(255,216,107,.25);border-radius:12px;padding:6px 14px;font-size:.88rem;color:#ffe5a5;margin-top:12px}
+
+  /* Story page layout */
+  .story-page{background:var(--card);border-radius:24px;padding:26px;min-height:560px;border:3px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.06);position:relative}
+  .page-corner{position:absolute;top:14px;right:18px;font-family:'Fredoka One',cursive;font-size:14px;color:#b59fcb}
+  .scene-heading{font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--purple);margin-bottom:14px}
+  .scene-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+  .scene-text p{font-size:1.05rem;line-height:1.85;margin-bottom:12px;color:var(--ink)}
+  .scene-image-wrap{border-radius:16px;overflow:hidden;border:2px solid var(--line);box-shadow:0 4px 12px rgba(0,0,0,.08);background:#f0f0f0;}
+  .scene-image-wrap img{width:100%;display:block;border-radius:14px;}
+  .scene-image-placeholder{width:100%;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:4rem;background:linear-gradient(135deg,#f0f4ff,#e8f0ff);}
+  .power-statement{background:linear-gradient(135deg,#fff9e6,#fff3cd);border-left:5px solid var(--orange);border-radius:12px;padding:14px 18px;margin:16px 0;font-style:italic;font-size:1.05rem;color:#5a3e00;font-weight:700}
+
+  /* Mini quiz */
+  .mini-quiz{background:linear-gradient(135deg,#f0f4ff,#e8f8ff);border:2px solid var(--blue);border-radius:16px;padding:16px;margin-top:20px}
+  .mini-quiz-title{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--blue);margin-bottom:10px}
+  .mini-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .m-opt{border:2px solid #cce;background:#fff;border-radius:12px;padding:10px 12px;font-family:'Nunito',sans-serif;font-weight:700;color:var(--ink);cursor:pointer;text-align:left;font-size:.9rem}
+  .m-opt.correct{background:#d4f5e0;border-color:#6bcb77;color:#1a6b35}
+  .m-opt.wrong{background:#ffe5e5;border-color:var(--coral);color:#8b2020}
+  .m-opt.locked{pointer-events:none}
+  .mini-feedback{min-height:22px;margin-top:8px;font-size:.88rem;font-weight:700;color:var(--purple)}
+
+  /* Mnemonic */
+  .mnemonic-box{background:linear-gradient(135deg,#f0f8ff,#e8f4ff);border-radius:20px;padding:24px;border:2px solid var(--blue)}
+  .mnemonic-title{font-family:'Fredoka One',cursive;font-size:1.4rem;color:var(--blue);margin-bottom:12px;text-align:center}
+  .mnemonic-word{font-family:'Fredoka One',cursive;font-size:3rem;color:var(--purple);text-align:center;letter-spacing:8px;margin-bottom:18px}
+  .mnemonic-row{display:flex;align-items:center;gap:14px;margin-bottom:10px;background:#fff;border-radius:12px;padding:10px 14px}
+  .mnemonic-letter{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--coral);min-width:36px;text-align:center}
+  .mnemonic-meaning{font-size:1rem;color:var(--ink);font-weight:600}
+
+  /* Quiz page */
+  .quiz-page{background:var(--card);border-radius:24px;padding:24px;min-height:560px;border:3px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.06)}
+  .quiz-header{font-family:'Fredoka One',cursive;font-size:1.6rem;color:var(--purple);margin-bottom:4px}
+  .quiz-sub{font-size:.9rem;color:#888;margin-bottom:16px}
+  .quiz-progress-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+  .q-counter{font-family:'Fredoka One',cursive;font-size:13px;color:#786f62}
+  .q-score-badge{font-family:'Fredoka One',cursive;font-size:13px;background:#ece7da;border:2px solid #d6ccb7;color:#6d5f49;padding:4px 14px;border-radius:20px}
+  .quiz-question-card{background:#fff;border:2px solid var(--line);border-radius:18px;padding:20px}
+  .quiz-q-emoji{font-size:40px;margin-bottom:8px}
+  .quiz-q-text{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#2e4f74;line-height:1.4;margin-bottom:14px}
+  .fquiz-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .fq-opt{border:2px solid #ddd5c9;background:#fff;border-radius:14px;padding:12px 14px;text-align:left;font-family:'Nunito',sans-serif;font-weight:800;color:#2f4b6b;cursor:pointer;font-size:.92rem}
+  .fq-opt.correct{background:#d4f5e0;border-color:var(--mint);color:#1a6b35}
+  .fq-opt.wrong{background:#ffe5e5;border-color:var(--coral);color:#8b2020}
+  .fq-opt.locked{pointer-events:none}
+  .q-result-msg{min-height:24px;margin-top:10px;text-align:center;font-family:'Fredoka One',cursive;color:var(--purple);font-size:.95rem}
+  .next-q-btn,.retry-btn,.proceed-btn{display:inline-flex;align-items:center;justify-content:center;border:none;border-radius:24px;padding:11px 26px;color:#fff;font-family:'Fredoka One',cursive;cursor:pointer;margin-top:12px;font-size:1rem}
+  .next-q-btn{background:linear-gradient(135deg,var(--orange),#e65c00)}
+  .retry-btn{background:linear-gradient(135deg,var(--coral),#c0392b)}
+  .proceed-btn{background:linear-gradient(135deg,var(--mint),#27ae60)}
+  .result-screen{text-align:center;padding:20px 8px}
+  .result-emoji{font-size:80px;animation:bob 1.9s ease infinite;margin-bottom:8px}
+  .result-title{font-family:'Fredoka One',cursive;font-size:1.9rem;margin-bottom:8px}
+  .result-score{font-family:'Fredoka One',cursive;font-size:3rem;color:var(--orange)}
+  .result-msg{color:#68728a;line-height:1.75;margin:12px auto 20px;max-width:520px}
+
+  /* Certificate page */
+  .cert-page{background:var(--card);border-radius:24px;padding:24px;min-height:560px;border:3px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.06)}
+  .cert-header-text{font-family:'Fredoka One',cursive;font-size:1.6rem;color:var(--purple);margin-bottom:4px}
+  .cert-controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .cert-name-input{flex:1;min-width:220px;padding:12px 14px;border-radius:14px;border:2px solid var(--line);font-size:1rem;font-weight:700;font-family:'Nunito',sans-serif}
+  .cert-btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:20px;padding:11px 22px;color:#fff;font-family:'Fredoka One',cursive;font-size:.95rem;cursor:pointer}
+  .cert-btn.download{background:linear-gradient(135deg,var(--purple),#7b5ea7)}
+  .cert-btn.print{background:linear-gradient(135deg,var(--blue),#2980b9)}
+  .cert-wrap{background:#fff;border-radius:16px;padding:6px;border:3px solid var(--gold);box-shadow:0 6px 16px rgba(0,0,0,.08)}
+  #cert{width:100%;display:block;border-radius:10px}
+
+  /* Final page */
+  .moral-box{background:linear-gradient(135deg,#fff9e6,#fff3cd);border-left:5px solid var(--orange);border-radius:14px;padding:20px 24px;margin-bottom:24px}
+  .moral-box h3{font-family:'Fredoka One',cursive;color:var(--orange);margin-bottom:8px}
+  .moral-box p{font-size:1.05rem;color:#5a3e00;font-style:italic;font-weight:600}
+  .vocab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:12px}
+  .vocab-card{background:#eef2ff;border-radius:12px;padding:12px 14px}
+  .vocab-card .word{font-family:'Fredoka One',cursive;color:var(--purple)}
+  .vocab-card .meaning{font-size:.85rem;color:#555;margin-top:4px}
+  .questions-list{list-style:none;padding:0;margin-top:12px}
+  .questions-list li{background:#f0fff4;border-left:4px solid var(--mint);border-radius:10px;padding:12px 16px;margin-bottom:10px;font-size:.98rem}
+  .section-title{font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--purple);margin:20px 0 4px}
+
+  footer{text-align:center;padding:24px;font-family:'Fredoka One',cursive;font-size:.85rem;color:#8a7f73;margin-top:20px}
+  footer a{color:var(--blue);text-decoration:none}
+
+  @media(max-width:700px){
+    .scene-layout{grid-template-columns:1fr}
+    .fquiz-options,.mini-opts{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <a class="home-link" href="index.html">🏠 Home</a>
+  <div class="tts-bar">
+    <button class="tts-btn" id="ttsBtn" onclick="toggleTTS()">🔊 Read Aloud</button>
+    <button class="tts-stop" onclick="stopTTS()">⏹ Stop</button>
+  </div>
+  <div class="progress-strip">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">Page 1 of 12</div>
+  </div>
+  <div class="nav-bar">
+    <button class="nav-btn" id="prevBtn" onclick="changePage(-1)" disabled>← Prev</button>
+    <div class="page-dots" id="pageDots"></div>
+    <button class="nav-btn" id="nextBtn" onclick="changePage(1)">Next →</button>
+  </div>
+
+  <!-- PAGE 0: Cover -->
+  <div class="page active" id="page-0">
+    <div class="cover">
+      <div class="age-badge">Ages 6-8 &nbsp;|&nbsp; Story</div>
+      <div class="cover-emoji">💖</div>
+      <div class="cover-title">The Monty Who Shared</div>
+      <div class="cover-sub">A Story About Generosity</div>
+      <div class="cover-tagline">"Discover how a small act of sharing can make a heart grow big and bright."</div>
+      <div class="character-badge">⭐ Meet Monty: A little monkey who loves sweet mangoes and learns to share.</div>
+    </div>
+  </div>
+
+  <!-- STORY PAGES with scene images and mini quiz -->
+  
+  
+  
+  
+  <div class="page" id="page-1">
+    <div class="story-page">
+      <div class="page-corner">1 / 7</div>
+      <div class="scene-heading">Monty's Mangoes</div>
+
+      <div class="scene-layout">
+        <div class="scene-text">
+          <p>Monty the monkey loved red mangoes. He found them in tall trees. Monty kept them all. "Mine!" he would shout.</p><p>He never shared his treats. His tummy was full. But his heart felt small. He liked having things just for him. He thought of only himself.</p>
+          
+        </div>
+        <div>
+          
+          <div class="scene-image-wrap">
+            <img src="monkey-and-crocodile-(-heart)-scene-1.png" alt="Monty's Mangoes" loading="lazy"/>
+          </div>
+          
+        </div>
+      </div>
+
+      
+      <div class="mini-quiz" id="mq-0">
+        <div class="mini-quiz-title">❓ Quick Check!</div>
+        <p style="font-size:.95rem;margin-bottom:10px;font-weight:600">What did Monty love to eat?</p>
+        <div class="mini-opts" id="mq-opts-0">
+          
+          <button class="m-opt" onclick="answerMini(0,0,this)">Bananas</button>
+          
+          <button class="m-opt" onclick="answerMini(0,1,this)">Fish</button>
+          
+          <button class="m-opt" onclick="answerMini(0,2,this)">Red mangoes</button>
+          
+          <button class="m-opt" onclick="answerMini(0,3,this)">Leaves</button>
+          
+        </div>
+        <div class="mini-feedback" id="mq-fb-0"></div>
+      </div>
+      
+    </div>
+  </div>
+  
+  
+  
+  
+  <div class="page" id="page-2">
+    <div class="story-page">
+      <div class="page-corner">2 / 7</div>
+      <div class="scene-heading">Croc's Sad Day</div>
+
+      <div class="scene-layout">
+        <div class="scene-text">
+          <p>One sunny day, Monty saw Croc. Croc was a big crocodile. Croc looked so sad. He was hungry.</p><p>His fish pond was dry. "Oh, no," Croc sighed. "I want a snack." Monty held his mangoes tight. He worried he might run out.</p>
+          
+        </div>
+        <div>
+          
+          <div class="scene-image-wrap">
+            <img src="monkey-and-crocodile-(-heart)-scene-2.png" alt="Croc's Sad Day" loading="lazy"/>
+          </div>
+          
+        </div>
+      </div>
+
+      
+      <div class="mini-quiz" id="mq-1">
+        <div class="mini-quiz-title">❓ Quick Check!</div>
+        <p style="font-size:.95rem;margin-bottom:10px;font-weight:600">Why was Croc sad?</p>
+        <div class="mini-opts" id="mq-opts-1">
+          
+          <button class="m-opt" onclick="answerMini(1,0,this)">He lost his friend</button>
+          
+          <button class="m-opt" onclick="answerMini(1,1,this)">His pond was dry</button>
+          
+          <button class="m-opt" onclick="answerMini(1,2,this)">He had too many fish</button>
+          
+          <button class="m-opt" onclick="answerMini(1,3,this)">He was sleepy</button>
+          
+        </div>
+        <div class="mini-feedback" id="mq-fb-1"></div>
+      </div>
+      
+    </div>
+  </div>
+  
+  
+  
+  
+  <div class="page" id="page-3">
+    <div class="story-page">
+      <div class="page-corner">3 / 7</div>
+      <div class="scene-heading">A Tiny Hurt</div>
+
+      <div class="scene-layout">
+        <div class="scene-text">
+          <p>Monty saw Croc's sad eyes. Croc's tummy growled loud. Monty had many mangoes. Croc had none.</p><p>A tear fell from Croc. Monty felt a tiny hurt. He knew he made Croc sad.</p>
+          <div class="power-statement">"My actions matter."</div>
+        </div>
+        <div>
+          
+          <div class="scene-image-wrap">
+            <div class="scene-image-placeholder">💖</div>
+          </div>
+          
+        </div>
+      </div>
+
+      
+      <div class="mini-quiz" id="mq-2">
+        <div class="mini-quiz-title">❓ Quick Check!</div>
+        <p style="font-size:.95rem;margin-bottom:10px;font-weight:600">What did Monty feel when he saw Croc's tear?</p>
+        <div class="mini-opts" id="mq-opts-2">
+          
+          <button class="m-opt" onclick="answerMini(2,0,this)">Happy</button>
+          
+          <button class="m-opt" onclick="answerMini(2,1,this)">Angry</button>
+          
+          <button class="m-opt" onclick="answerMini(2,2,this)">A tiny hurt in his heart</button>
+          
+          <button class="m-opt" onclick="answerMini(2,3,this)">Nothing</button>
+          
+        </div>
+        <div class="mini-feedback" id="mq-fb-2"></div>
+      </div>
+      
+    </div>
+  </div>
+  
+  
+  
+  
+  <div class="page" id="page-4">
+    <div class="story-page">
+      <div class="page-corner">4 / 7</div>
+      <div class="scene-heading">A Brave Choice</div>
+
+      <div class="scene-layout">
+        <div class="scene-text">
+          <p>Monty took a big breath. He picked a juicy mango. He climbed down.</p><p>"Here, Croc," he said with a smile. "This is for you." Croc's eyes shone bright. He took the mango. A happy wave spread.</p>
+          <div class="power-statement">"Sharing makes others smile."</div>
+        </div>
+        <div>
+          
+          <div class="scene-image-wrap">
+            <img src="monkey-and-crocodile-(-heart)-scene-4.png" alt="A Brave Choice" loading="lazy"/>
+          </div>
+          
+        </div>
+      </div>
+
+      
+      <div class="mini-quiz" id="mq-3">
+        <div class="mini-quiz-title">❓ Quick Check!</div>
+        <p style="font-size:.95rem;margin-bottom:10px;font-weight:600">What brave thing did Monty do?</p>
+        <div class="mini-opts" id="mq-opts-3">
+          
+          <button class="m-opt" onclick="answerMini(3,0,this)">He ran away</button>
+          
+          <button class="m-opt" onclick="answerMini(3,1,this)">He ate all his mangoes</button>
+          
+          <button class="m-opt" onclick="answerMini(3,2,this)">He gave Croc a mango</button>
+          
+          <button class="m-opt" onclick="answerMini(3,3,this)">He climbed higher</button>
+          
+        </div>
+        <div class="mini-feedback" id="mq-fb-3"></div>
+      </div>
+      
+    </div>
+  </div>
+  
+  
+  
+  
+  <div class="page" id="page-5">
+    <div class="story-page">
+      <div class="page-corner">5 / 7</div>
+      <div class="scene-heading">A Happy Heart</div>
+
+      <div class="scene-layout">
+        <div class="scene-text">
+          <p>Croc ate the mango. "Thank you, Monty!" he cheered. Monty felt warm inside. Giving one mango felt good.</p><p>Better than eating many alone. His heart felt light. He knew sharing was best.</p>
+          <div class="power-statement">"Giving makes my heart happy."</div>
+        </div>
+        <div>
+          
+          <div class="scene-image-wrap">
+            <img src="monkey-and-crocodile-(-heart)-scene-5.png" alt="A Happy Heart" loading="lazy"/>
+          </div>
+          
+        </div>
+      </div>
+
+      
+      <div class="mini-quiz" id="mq-4">
+        <div class="mini-quiz-title">❓ Quick Check!</div>
+        <p style="font-size:.95rem;margin-bottom:10px;font-weight:600">How did Monty feel after sharing?</p>
+        <div class="mini-opts" id="mq-opts-4">
+          
+          <button class="m-opt" onclick="answerMini(4,0,this)">Sad and empty</button>
+          
+          <button class="m-opt" onclick="answerMini(4,1,this)">Warm and light</button>
+          
+          <button class="m-opt" onclick="answerMini(4,2,this)">Still hungry</button>
+          
+          <button class="m-opt" onclick="answerMini(4,3,this)">Mad at Croc</button>
+          
+        </div>
+        <div class="mini-feedback" id="mq-fb-4"></div>
+      </div>
+      
+    </div>
+  </div>
+  
+  
+  
+  
+  <div class="page" id="page-6">
+    <div class="story-page">
+      <div class="page-corner">6 / 7</div>
+      <div class="scene-heading">The Power of GIVE</div>
+
+      <div class="scene-layout">
+        <div class="scene-text">
+          <p>Want to have a happy heart like Monty? Remember to GIVE!</p><p>It's a special word for being kind and sharing with everyone around you.</p>
+          
+        </div>
+        <div>
+          
+          <div class="scene-image-wrap">
+            <div class="scene-image-placeholder">💖</div>
+          </div>
+          
+        </div>
+      </div>
+
+      
+    </div>
+  </div>
+  
+  
+  
+  
+  <div class="page" id="page-7">
+    <div class="story-page">
+      <div class="page-corner">7 / 7</div>
+      <div class="scene-heading">A Big, Bright Heart</div>
+
+      <div class="scene-layout">
+        <div class="scene-text">
+          <p>When you share what you have, your heart gets big and bright.</p><p>It makes the world a happier place for all. Be like Monty, and share your good things!</p>
+          
+        </div>
+        <div>
+          
+          <div class="scene-image-wrap">
+            <div class="scene-image-placeholder">💖</div>
+          </div>
+          
+        </div>
+      </div>
+
+      
+    </div>
+  </div>
+  
+
+  <!-- MNEMONIC PAGE -->
+  
+  <div class="page" id="page-8">
+    <div class="story-page">
+      <div class="mnemonic-box">
+        <div class="mnemonic-title">🧠 Remember It With <strong>GIVE</strong>!</div>
+        <div class="mnemonic-word">GIVE</div>
+        
+        <div class="mnemonic-row">
+          <div class="mnemonic-letter">G</div>
+          <div class="mnemonic-meaning">Give with a happy heart.</div>
+        </div>
+        
+        <div class="mnemonic-row">
+          <div class="mnemonic-letter">I</div>
+          <div class="mnemonic-meaning">Inspire kindness in others.</div>
+        </div>
+        
+        <div class="mnemonic-row">
+          <div class="mnemonic-letter">V</div>
+          <div class="mnemonic-meaning">Value friendship always.</div>
+        </div>
+        
+        <div class="mnemonic-row">
+          <div class="mnemonic-letter">E</div>
+          <div class="mnemonic-meaning">Everyone benefits from sharing.</div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+
+  <!-- FINAL PAGE: Moral + Vocab + Discussion -->
+  <div class="page" id="page-9">
+    <div class="story-page">
+      <div class="page-corner">The End 🌟</div>
+      
+      <div class="moral-box"><h3>✨ What did we learn?</h3><p>When you share what you have, your heart grows bigger and brighter, making the whole world a happier place.</p></div>
+      
+      
+      <p class="section-title">📚 Word Spotlight</p>
+      <div class="vocab-grid">
+        
+        <div class="vocab-card"><div class="word">mangoes</div><div class="meaning">a sweet, juicy fruit</div></div>
+        
+        <div class="vocab-card"><div class="word">sighed</div><div class="meaning">let out a long breath to show sadness</div></div>
+        
+        <div class="vocab-card"><div class="word">sparkled</div><div class="meaning">shone brightly with little flashes</div></div>
+        
+        <div class="vocab-card"><div class="word">cheered</div><div class="meaning">shouted with joy or praise</div></div>
+        
+        <div class="vocab-card"><div class="word">treasure</div><div class="meaning">something very special and valuable</div></div>
+        
+      </div>
+      
+      
+      <p class="section-title">💬 Think About It!</p>
+      <ul class="questions-list"><li>Have you ever felt sad when you didn't share something? How did it feel?</li><li>What is something small you can share with a friend or family member today?</li><li>Why do you think sharing makes Monty's heart feel lighter?</li><li>How can you show kindness to someone who is sad or hungry?</li></ul>
+      
+    </div>
+  </div>
+
+  <!-- QUIZ PAGE -->
+  <div class="page" id="page-10">
+    <div class="quiz-page">
+      <div class="quiz-header">🏆 Final Quiz</div>
+      <div class="quiz-sub">Answer 5 out of 6 correctly to unlock your certificate!</div>
+      <div class="quiz-progress-row">
+        <div class="q-counter" id="quizCounter">Question 1 of 6</div>
+        <div class="q-score-badge" id="scoreBadge">Score: 0 / 6</div>
+      </div>
+      <div id="quizActive">
+        <div class="quiz-question-card">
+          <div class="quiz-q-emoji" id="quizEmoji">🌟</div>
+          <div class="quiz-q-text" id="quizText">Loading question...</div>
+          <div class="fquiz-options" id="quizOptions"></div>
+          <div class="q-result-msg" id="quizFeedback"></div>
+          <button class="next-q-btn" id="nextQBtn" onclick="nextQuestion()" style="display:none">Next Question →</button>
+        </div>
+      </div>
+      <div id="quizPass" style="display:none">
+        <div class="result-screen">
+          <div class="result-emoji">🏆</div>
+          <div class="result-title">Amazing Work!</div>
+          <div class="result-score" id="passScore">6 / 6</div>
+          <div class="result-msg">You understood the story beautifully. Your certificate is ready!</div>
+          <button class="proceed-btn" onclick="goToCert()">Get My Certificate 🎓</button>
+        </div>
+      </div>
+      <div id="quizFail" style="display:none">
+        <div class="result-screen">
+          <div class="result-emoji">📖</div>
+          <div class="result-title">Almost There!</div>
+          <div class="result-score" id="failScore">3 / 6</div>
+          <div class="result-msg">Go back and read the story again — you can do it!</div>
+          <button class="retry-btn" onclick="restartQuiz()">Try Again ↺</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CERTIFICATE PAGE -->
+  <div class="page" id="page-11">
+    <div class="cert-page">
+      <div class="cert-header-text">🎓 Your Certificate</div>
+      <div class="cert-controls">
+        <input class="cert-name-input" id="certName" placeholder="Type your name here ✏️" oninput="drawCert()"/>
+        <button class="cert-btn download" onclick="downloadCert()">⬇ Download PNG</button>
+        <button class="cert-btn print" onclick="printCert()">🖨 Print</button>
+      </div>
+      <div class="cert-wrap">
+        <canvas id="cert" width="900" height="630"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+<footer><a href="index.html">🏠 FiveToFifteen</a> &nbsp;|&nbsp; Safe fun learning for kids aged 5–15</footer>
+
+<script>
+const STORY_DATA = {
+  quiz:     [{"a": 1, "emoji": "\ud83c\udf1f", "opts": ["He was scared of Croc", "He kept his mangoes only for himself", "He couldn\u0027t find food", "He didn\u0027t like mangoes"], "q": "What was Monty\u0027s big problem at the start of the story?"}, {"a": 1, "emoji": "\ud83c\udf1f", "opts": ["Monty ate all his food", "His fish pond was dry", "He didn\u0027t like fish", "He was waiting for a party"], "q": "Why was Croc hungry?"}, {"a": 1, "emoji": "\ud83c\udf1f", "opts": ["Croc yelled at him", "He saw Croc\u0027s sad eyes and tear", "He was bored", "His tummy hurt"], "q": "What made Monty realize he should help Croc?"}, {"a": 2, "emoji": "\ud83c\udf1f", "opts": ["A fish", "A banana", "A juicy mango", "A leaf"], "q": "What did Monty give Croc?"}, {"a": 2, "emoji": "\ud83c\udf1f", "opts": ["He felt angry", "He felt sad", "He felt warm and happy", "He felt nothing"], "q": "How did Monty feel after sharing his mango?"}, {"a": 2, "emoji": "\ud83c\udf1f", "opts": ["Keep everything for yourself", "It\u0027s good to be hungry", "Sharing makes your heart grow bigger and happier", "Monkeys should not talk to crocodiles"], "q": "What is the main lesson of this story?"}],
+  miniQuiz: [{"answer": 2, "emoji": "\u2753", "fail": "Good try! Think about what Monty always kept for himself.", "options": ["Bananas", "Fish", "Red mangoes", "Leaves"], "question": "What did Monty love to eat?", "success": "Great thinking! Monty loved his sweet red mangoes."}, {"answer": 1, "emoji": "\u2753", "fail": "Good try! Remember what Croc wished he had because of the dry pond.", "options": ["He lost his friend", "His pond was dry", "He had too many fish", "He was sleepy"], "question": "Why was Croc sad?", "success": "That\u0027s right! Croc was sad because his pond was dry and he was hungry."}, {"answer": 2, "emoji": "\u2753", "fail": "Good try! Monty started to feel bad when he saw Croc\u0027s tear.", "options": ["Happy", "Angry", "A tiny hurt in his heart", "Nothing"], "question": "What did Monty feel when he saw Croc\u0027s tear?", "success": "You got it! Monty felt a tiny hurt, showing he understood Croc\u0027s sadness."}, {"answer": 2, "emoji": "\u2753", "fail": "Good try! Think about how Monty helped Croc feel better.", "options": ["He ran away", "He ate all his mangoes", "He gave Croc a mango", "He climbed higher"], "question": "What brave thing did Monty do?", "success": "Excellent! Monty bravely shared his favorite treat with Croc."}, {"answer": 1, "emoji": "\u2753", "fail": "Good try! Remember, giving made Monty\u0027s heart feel better.", "options": ["Sad and empty", "Warm and light", "Still hungry", "Mad at Croc"], "question": "How did Monty feel after sharing?", "success": "Perfect! Sharing made Monty feel happy and good inside."}],
+  cert:     {"badges": ["\u2713 Learned to Share", "\u2713 Showed Kindness", "\u2713 Made a Friend Happy", "\u2713 Grew a Big Heart"], "bigEmoji": "\ud83d\udc96", "bigTitle": "Certificate of a Giving Heart", "defaultName": "Kindness Explorer", "fileName": "monty-who-shared-certificate.png", "header": "THE MONTY WHO SHARED CERTIFICATE", "lineText": "has shown the spirit of generosity and kindness in completing this story.", "motto": "GIVE \u2022 CARE \u2022 SHARE \u2022 GROW", "traitLine": "\u2728 Caring \u2022 \ud83e\udd1d Sharing \u2022 \ud83d\ude0a Friendly"}
+};
+const QUIZ = STORY_DATA.quiz;
+const CERT = STORY_DATA.cert;
+
+const TOTAL       = 12;
+const QUIZ_IDX    = 10;
+const CERT_IDX    = 11;
+let current       = 0;
+let quizPassed    = false;
+let synth         = window.speechSynthesis;
+let speaking      = false;
+
+// ── Navigation ────────────────────���───────────────────────────
+function buildDots(){
+  const c = document.getElementById('pageDots');
+  for(let i=0;i<TOTAL;i++){
+    const d=document.createElement('button');
+    d.className='dot'+(i===0?' active':'');
+    d.onclick=()=>goTo(i);
+    c.appendChild(d);
+  }
+}
+function goTo(n){
+  if(n===CERT_IDX && !quizPassed){
+    alert('Pass the final quiz first to unlock your certificate! 🏆');
+    return;
+  }
+  document.getElementById('page-'+current).classList.remove('active');
+  document.querySelectorAll('.dot')[current].classList.remove('active');
+  document.querySelectorAll('.dot')[current].classList.add('visited');
+  current=n;
+  document.getElementById('page-'+current).classList.add('active');
+  document.querySelectorAll('.dot')[current].classList.add('active');
+  document.getElementById('prevBtn').disabled=current===0;
+  document.getElementById('nextBtn').disabled=current===TOTAL-1;
+  const pct=Math.round((current/(TOTAL-1))*100);
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressLabel').textContent='Page '+(current+1)+' of '+TOTAL;
+  stopTTS();
+  if(current===QUIZ_IDX) renderQuiz();
+  if(current===CERT_IDX) setTimeout(drawCert,100);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function changePage(d){ goTo(Math.min(Math.max(current+d,0),TOTAL-1)); }
+function goToCert(){ goTo(CERT_IDX); }
+buildDots();
+
+// ── TTS ───────────────────────────────────────────���───────────
+function toggleTTS(){
+  if(speaking){stopTTS();return;}
+  const text=document.getElementById('page-'+current).innerText;
+  const utt=new SpeechSynthesisUtterance(text);
+  utt.rate=.9;utt.pitch=1.1;
+  utt.onend=()=>{speaking=false;document.getElementById('ttsBtn').textContent='🔊 Read Aloud';};
+  synth.speak(utt);speaking=true;
+  document.getElementById('ttsBtn').textContent='⏸ Pause';
+}
+function stopTTS(){ synth.cancel();speaking=false;document.getElementById('ttsBtn').textContent='🔊 Read Aloud'; }
+
+// ── Mini Quiz ────────────────────────────────��────────────────
+function answerMini(pageIdx, chosen, btn){
+  const mq = STORY_DATA.miniQuiz[pageIdx];
+  if(!mq) return;
+  const opts=[...document.querySelectorAll('#mq-opts-'+pageIdx+' .m-opt')];
+  opts.forEach(b=>b.classList.add('locked'));
+  const fb=document.getElementById('mq-fb-'+pageIdx);
+  if(chosen===mq.answer){
+    btn.classList.add('correct');
+    fb.textContent='✅ '+mq.success;
+    fb.style.color='#1a6b35';
+  }else{
+    btn.classList.add('wrong');
+    opts[mq.answer].classList.add('correct');
+    fb.textContent='💡 '+mq.fail;
+    fb.style.color='#8b2020';
+  }
+}
+
+// ── Final Quiz ────────────────────────────────────────────────
+let quizIndex=0,quizScore=0,quizLocked=false;
+function renderQuiz(){
+  document.getElementById('quizActive').style.display='block';
+  document.getElementById('quizPass').style.display='none';
+  document.getElementById('quizFail').style.display='none';
+  quizIndex=0;quizScore=0;quizLocked=false;
+  showQuestion();
+}
+function showQuestion(){
+  if(!QUIZ||!QUIZ.length){document.getElementById('quizText').textContent='No quiz available.';return;}
+  const item=QUIZ[quizIndex];
+  document.getElementById('quizCounter').textContent='Question '+(quizIndex+1)+' of '+QUIZ.length;
+  document.getElementById('scoreBadge').textContent='Score: '+quizScore+' / '+QUIZ.length;
+  document.getElementById('quizEmoji').textContent=item.emoji||'🌟';
+  document.getElementById('quizText').textContent=item.q;
+  document.getElementById('quizFeedback').textContent='';
+  document.getElementById('nextQBtn').style.display='none';
+  quizLocked=false;
+  const wrap=document.getElementById('quizOptions');
+  wrap.innerHTML='';
+  item.opts.forEach((text,i)=>{
+    const btn=document.createElement('button');
+    btn.className='fq-opt';
+    btn.textContent=String.fromCharCode(65+i)+'. '+text;
+    btn.onclick=()=>answerQuiz(i,btn);
+    wrap.appendChild(btn);
+  });
+}
+function answerQuiz(i,btn){
+  if(quizLocked)return;
+  quizLocked=true;
+  const item=QUIZ[quizIndex];
+  [...document.querySelectorAll('#quizOptions .fq-opt')].forEach(b=>b.classList.add('locked'));
+  if(i===item.a){quizScore++;btn.classList.add('correct');document.getElementById('quizFeedback').textContent='✅ Great thinking!';}
+  else{btn.classList.add('wrong');document.querySelectorAll('#quizOptions .fq-opt')[item.a].classList.add('correct');document.getElementById('quizFeedback').textContent='💡 Good try! Review the best answer.';}
+  document.getElementById('scoreBadge').textContent='Score: '+quizScore+' / '+QUIZ.length;
+  document.getElementById('nextQBtn').style.display='inline-flex';
+  document.getElementById('nextQBtn').textContent=quizIndex===QUIZ.length-1?'See My Result! 🏁':'Next Question →';
+}
+function nextQuestion(){ quizIndex++;if(quizIndex>=QUIZ.length){showQuizResult();}else{showQuestion();} }
+function showQuizResult(){
+  document.getElementById('quizActive').style.display='none';
+  if(quizScore>=5){
+    quizPassed=true;
+    document.getElementById('quizPass').style.display='block';
+    document.getElementById('passScore').textContent=quizScore+' / '+QUIZ.length;
+  }else{
+    document.getElementById('quizFail').style.display='block';
+    document.getElementById('failScore').textContent=quizScore+' / '+QUIZ.length;
+  }
+}
+function restartQuiz(){ renderQuiz(); }
+
+// ── Certificate ───────────────────────────────────────────────
+const certCanvas=document.getElementById('cert');
+const ctx=certCanvas.getContext('2d');
+const qrImg=new Image();
+qrImg.crossOrigin='anonymous';
+qrImg.onload=()=>drawCert();
+qrImg.src='https://quickchart.io/qr?text='+encodeURIComponent('https://fivetofifteen.com/')+'&size=160';
+
+function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath();}
+function drawStar(cx,cy,r,color){ctx.save();ctx.fillStyle=color;ctx.beginPath();for(let i=0;i<10;i++){const a=(Math.PI/5)*i-Math.PI/2;const rad=i%2===0?r:r*.45;ctx.lineTo(cx+Math.cos(a)*rad,cy+Math.sin(a)*rad);}ctx.closePath();ctx.fill();ctx.restore();}
+
+function drawCert(){
+  const name=(document.getElementById('certName').value||CERT.defaultName||'Story Reader').trim();
+  ctx.clearRect(0,0,900,630);
+  const bg=ctx.createLinearGradient(0,0,900,630);
+  bg.addColorStop(0,'#f3efe6');bg.addColorStop(.55,'#ffffff');bg.addColorStop(1,'#e7eef6');
+  ctx.fillStyle=bg; rr(0,0,900,630,20);ctx.fill();
+  ctx.strokeStyle='#b78958';ctx.lineWidth=6; rr(8,8,884,614,18);ctx.stroke();
+  ctx.strokeStyle='#d4af72';ctx.lineWidth=2; rr(16,16,868,598,14);ctx.stroke();
+  drawStar(50,50,18,'#d4af72');drawStar(850,50,18,'#d4af72');drawStar(50,580,18,'#d4af72');drawStar(850,580,18,'#d4af72');
+  ctx.fillStyle='#5a3e1b';ctx.font='bold 18px Fredoka One,Nunito,sans-serif';ctx.textAlign='center';ctx.fillText(CERT.header||'CERTIFICATE',450,56);
+  ctx.font='72px serif';ctx.fillText(CERT.bigEmoji||'🏆',450,140);
+  ctx.fillStyle='#2c3e8c';ctx.font='bold 34px Fredoka One,Nunito,sans-serif';ctx.fillText(CERT.bigTitle||'Certificate of Completion',450,185);
+  ctx.fillStyle='#6d5f49';ctx.font='16px Nunito,sans-serif';ctx.fillText('This certifies that',450,220);
+  ctx.fillStyle='#2c3e8c';ctx.font='bold 38px Fredoka One,Nunito,sans-serif';ctx.fillText(name,450,268);
+  ctx.strokeStyle='#c9a96a';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(160,278);ctx.lineTo(740,278);ctx.stroke();
+  ctx.fillStyle='#4a4a6a';ctx.font='15px Nunito,sans-serif';ctx.fillText(CERT.lineText||'has completed this story.',450,304);
+  ctx.fillStyle='#8b6914';ctx.font='bold 14px Nunito,sans-serif';ctx.fillText(CERT.traitLine||'📖 Reading • 🧠 Learning • ❤️ Growing',450,332);
+  const badges=CERT.badges||[];
+  const bw=180,bx=450-(badges.length*bw)/2+bw/2;
+  badges.forEach((b,i)=>{const x=bx+i*bw;ctx.fillStyle='rgba(200,168,100,.18)';rr(x-80,352,160,34,12);ctx.fill();ctx.fillStyle='#5a3e1b';ctx.font='bold 12px Nunito,sans-serif';ctx.fillText(b,x,374);});
+  ctx.strokeStyle='#c9a96a';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(100,400);ctx.lineTo(800,400);ctx.stroke();
+  ctx.fillStyle='#7a6142';ctx.font='bold 13px Nunito,sans-serif';ctx.fillText(CERT.motto||'READ • LEARN • GROW • SHINE',450,424);
+  if(qrImg.complete&&qrImg.naturalWidth){ctx.drawImage(qrImg,368,440,164,150);}
+  ctx.fillStyle='#aaa';ctx.font='11px Nunito,sans-serif';ctx.fillText('fivetofifteen.com',450,606);
+}
+function downloadCert(){
+  drawCert();
+  const a=document.createElement('a');
+  a.download=CERT.fileName||'certificate.png';
+  a.href=certCanvas.toDataURL('image/png');
+  a.click();
+}
+function printCert(){
+  drawCert();
+  const w=window.open('');
+  w.document.write('<img src="'+certCanvas.toDataURL()+'" style="width:100%"/>');
+  w.print();w.close();
+}
+drawCert();
+</script>
+</body>
+</html>
