@@ -1,0 +1,70 @@
+{
+  "description": "Registry of all auto-generated content",
+  "version": "1.0",
+  "content": [
+    {
+      "goal_id": "goal_ant_queen_b84f57",
+      "title": "Ant Queen",
+      "type": "story",
+      "category": "story-collection",
+      "filename": "ant-queen-kids.html",
+      "topic": "Ant queen",
+      "age_group": "6-8",
+      "difficulty": "beginner",
+      "description": "Auto-generated story about Ant queen",
+      "hook_line": "\ud83c\udf1f Discover 'Ant queen' - a magical story for kids!",
+      "hashtags": [],
+      "test_passed": null,
+      "deployed_at": "2026-05-02T12:00:44.552399",
+      "social_media": {
+        "hook_line": "\ud83c\udf1f Discover 'Ant queen' - a magical story for kids!",
+        "hashtags": null,
+        "facebook": "social_facebook_ant-queen_20260501_202853.png",
+        "instagram": "social_instagram_ant-queen_20260501_202853.png"
+      }
+    },
+    {
+      "goal_id": "goal_the_wise_owl_7d54fc",
+      "title": "The Wise Owl",
+      "type": "story",
+      "category": "story-collection",
+      "filename": "the-wise-owl-kids.html",
+      "topic": "The Wise Owl",
+      "age_group": "5-7",
+      "difficulty": "easy",
+      "description": "Auto-generated story about The Wise Owl",
+      "hook_line": "The twist you never saw coming awaits inside! \ud83c\udfad",
+      "hashtags": [],
+      "test_passed": null,
+      "deployed_at": "2026-05-02T12:00:44.578646",
+      "social_media": {
+        "hook_line": "The twist you never saw coming awaits inside! \ud83c\udfad",
+        "hashtags": [
+          "#KidsStories",
+          "#BookForKids",
+          "#ChildrenLiterature"
+        ],
+        "facebook": "social_facebook_the-wise-owl_20260502_113418.png",
+        "instagram": "social_instagram_the-wise-owl_20260502_113418.png"
+      }
+    }
+  ],
+  "categories": {
+    "story-collection": {
+      "label": "Story Collection",
+      "section_id": "story-collection"
+    },
+    "math-fun": {
+      "label": "Math is Fun",
+      "section_id": "math-is-fun"
+    },
+    "science": {
+      "label": "Space & Science",
+      "section_id": "space-science"
+    },
+    "worksheets": {
+      "label": "Worksheets",
+      "section_id": "worksheets"
+    }
+  }
+}
