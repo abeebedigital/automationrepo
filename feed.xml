@@ -5,8 +5,40 @@
   <link>https://fivetofifteen.com</link>
   <description>New stories, challenge pages, competitions, and exam practice from FiveToFifteen.</description>
   <language>en-au</language>
-  <lastBuildDate>Mon, 27 Apr 2026 11:12:05 GMT</lastBuildDate>
+  <lastBuildDate>Sat, 02 May 2026 09:10:09 GMT</lastBuildDate>
   <atom:link href="https://fivetofifteen.com/feed.xml" rel="self" type="application/rss+xml" />
+  <item>
+    <title>The Queenie Who Cared</title>
+    <link>https://fivetofifteen.com/ant-queen-kids.html</link>
+    <guid>https://fivetofifteen.com/ant-queen-kids.html</guid>
+    <description>A Story About Helping Others</description>
+    <category>Learning Page</category>
+    <pubDate>Sat, 02 May 2026 09:10:09 GMT</pubDate>
+  </item>
+  <item>
+    <title>The Lion Who Learned to Be Gentle</title>
+    <link>https://fivetofifteen.com/lion-and-rabbit-kids.html</link>
+    <guid>https://fivetofifteen.com/lion-and-rabbit-kids.html</guid>
+    <description>A Story About Kindness</description>
+    <category>Learning Page</category>
+    <pubDate>Sat, 02 May 2026 09:10:09 GMT</pubDate>
+  </item>
+  <item>
+    <title>The Monty Who Shared</title>
+    <link>https://fivetofifteen.com/monkey-and-crocodile-(-heart)-kids.html</link>
+    <guid>https://fivetofifteen.com/monkey-and-crocodile-(-heart)-kids.html</guid>
+    <description>A Story About Generosity</description>
+    <category>Learning Page</category>
+    <pubDate>Sat, 02 May 2026 09:10:09 GMT</pubDate>
+  </item>
+  <item>
+    <title>The Wise Owl Who Learned to Listen</title>
+    <link>https://fivetofifteen.com/the-wise-owl-kids.html</link>
+    <guid>https://fivetofifteen.com/the-wise-owl-kids.html</guid>
+    <description>A Story About Listening and Teamwork</description>
+    <category>Learning Page</category>
+    <pubDate>Sat, 02 May 2026 09:10:09 GMT</pubDate>
+  </item>
   <item>
     <title>The Magic Number Forest 🌟</title>
     <link>https://fivetofifteen.com/01_math_magic_storybook.html</link>
@@ -453,38 +485,6 @@
     <guid>https://fivetofifteen.com/multiplication-table-8-kids.html</guid>
     <description>Learn the number 8 multiplication table with a fun storybook, animated facts, practice questions, and a certificate.</description>
     <category>Math is Fun</category>
-    <pubDate>Mon, 27 Apr 2026 11:12:05 GMT</pubDate>
-  </item>
-  <item>
-    <title>Multiply with 9! | FiveToFifteen</title>
-    <link>https://fivetofifteen.com/multiplication-table-9-kids.html</link>
-    <guid>https://fivetofifteen.com/multiplication-table-9-kids.html</guid>
-    <description>Learn the number 9 multiplication table with a fun storybook, animated facts, practice questions, and a certificate.</description>
-    <category>Math is Fun</category>
-    <pubDate>Mon, 27 Apr 2026 11:12:05 GMT</pubDate>
-  </item>
-  <item>
-    <title>Multiplication Tables Hub | FiveToFifteen</title>
-    <link>https://fivetofifteen.com/multiplication-tables-hub.html</link>
-    <guid>https://fivetofifteen.com/multiplication-tables-hub.html</guid>
-    <description>One hub page for all multiplication-table stories from 1 to 10.</description>
-    <category>Learning Page</category>
-    <pubDate>Mon, 27 Apr 2026 11:12:05 GMT</pubDate>
-  </item>
-  <item>
-    <title>Multiplication Worksheets | FiveToFifteen</title>
-    <link>https://fivetofifteen.com/multiplication-worksheets.html</link>
-    <guid>https://fivetofifteen.com/multiplication-worksheets.html</guid>
-    <description>Printable multiplication worksheets for table practice, skip counting, repeated addition, missing factors, word problems, table mazes, and mixed challenges.</description>
-    <category>Learning Page</category>
-    <pubDate>Mon, 27 Apr 2026 11:12:05 GMT</pubDate>
-  </item>
-  <item>
-    <title>News | FiveToFifteen</title>
-    <link>https://fivetofifteen.com/news.html</link>
-    <guid>https://fivetofifteen.com/news.html</guid>
-    <description>News, updates, launches, and friendly announcements from FiveToFifteen.</description>
-    <category>Learning Page</category>
     <pubDate>Mon, 27 Apr 2026 11:12:05 GMT</pubDate>
   </item>
 </channel>
